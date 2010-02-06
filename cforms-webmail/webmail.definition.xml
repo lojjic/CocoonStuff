@@ -1,0 +1,198 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<fd:form xmlns:fd="http://apache.org/cocoon/forms/1.0#definition">
+	<fd:widgets>
+		
+		<!--========== Messages: ===========-->
+		<fd:messages id="notifications" />
+		
+		<!--========== Folder Tree: ===========-->
+		<fd:class id="folder-repeater">
+			<fd:widgets>
+				<fd:repeater id="folders">
+					<fd:widgets>
+						<!--
+						<fd:action id="collapser">
+							<fd:label>+</fd:label>
+							<fd:on-action>
+								<javascript>
+									var ws = Packages.org.apache.cocoon.forms.formmodel.WidgetState;
+									var repeater = event.source.lookupWidget("../folders");
+									repeater.state = (repeater.state === ws.ACTIVE) ? ws.INVISIBLE : ws.ACTIVE;
+								</javascript>
+							</fd:on-action>
+						</fd:action>
+						-->
+						<fd:action id="select" command="selectFolder">
+							<fd:label>Select</fd:label>
+						</fd:action>
+						<fd:field id="name" state="output">
+							<fd:datatype base="string" />
+						</fd:field>
+						<fd:field id="fullName" state="invisible">
+							<fd:datatype base="string" />
+						</fd:field>
+						<fd:booleanfield id="hasUnread" state="output">
+							<fd:on-value-changed>
+								<javascript>event.source.getForm().addWidgetUpdate(event.source.lookupWidget("../name"));</javascript>
+							</fd:on-value-changed>
+						</fd:booleanfield>
+						<fd:field id="unread" state="output">
+							<fd:datatype base="integer" />
+						</fd:field>
+						<fd:field id="total" state="output">
+							<fd:datatype base="integer" />
+						</fd:field>
+						<fd:new id="folder-repeater" />
+					</fd:widgets>
+				</fd:repeater>
+			</fd:widgets>
+		</fd:class>
+		<fd:new id="folder-repeater" />
+		<fd:action id="refreshFolderList" command="refreshFolderList">
+			<fd:label>Refresh</fd:label>
+		</fd:action>
+		
+		<!--=========== Message List: ============-->
+		<fd:group id="messages">
+			<fd:widgets>
+				<fd:field id="folderName" state="output">
+					<fd:datatype base="string" />
+				</fd:field>
+				<fd:field id="begin" state="output">
+					<fd:datatype base="double" />
+				</fd:field>
+				<fd:field id="end" state="output">
+					<fd:datatype base="double" />
+				</fd:field>
+				<fd:field id="total" state="output">
+					<fd:datatype base="integer" />
+				</fd:field>
+				<fd:action id="delete" command="deleteMessages">
+					<fd:label>Delete</fd:label>
+				</fd:action>
+				<fd:action id="move" command="moveMessages">
+					<fd:label>Move To:</fd:label>
+				</fd:action>
+				<fd:field id="folderList">
+					<fd:datatype base="string" />
+					<!--<fd:selection-list type="flow-jxpath" list-path="folderSelectionList" value-path="value" label-path="label" />-->
+				</fd:field>
+				<fd:repeater id="list">
+					<fd:widgets>
+						<fd:action id="select" command="selectMessage">
+							<fd:label>Select</fd:label>
+						</fd:action>
+						<fd:booleanfield id="isUnread" state="output">
+							<fd:on-value-changed>
+								<javascript>
+									var widgets = event.source.getParent().getChildren();
+									while(widgets.hasNext()) {
+										event.source.getForm().addWidgetUpdate(widgets.next());
+									}
+								</javascript>
+							</fd:on-value-changed>
+						</fd:booleanfield>
+						<fd:booleanfield id="isSelected" />
+						<fd:field id="subject" state="output">
+							<fd:datatype base="string" />
+							<fd:on-value-changed>
+								<javascript>event.source.getForm().addWidgetUpdate(event.source.lookupWidget("../isUnread"));</javascript>
+							</fd:on-value-changed>
+						</fd:field>
+						<fd:field id="sender" state="output">
+							<fd:datatype base="string" />
+							<fd:on-value-changed>
+								<javascript>event.source.getForm().addWidgetUpdate(event.source.lookupWidget("../isUnread"));</javascript>
+							</fd:on-value-changed>
+						</fd:field>
+						<fd:field id="date" state="output">
+							<fd:datatype base="date">
+								<fd:convertor type="formatting">
+									<fd:patterns>
+										<fd:pattern>yyyy/MM/dd hh:mm</fd:pattern>
+									</fd:patterns>
+								</fd:convertor>
+							</fd:datatype>
+							<fd:on-value-changed>
+								<javascript>event.source.getForm().addWidgetUpdate(event.source.lookupWidget("../isUnread"));</javascript>
+							</fd:on-value-changed>
+						</fd:field>
+						<fd:field id="size" state="output">
+							<fd:datatype base="integer" />
+							<fd:on-value-changed>
+								<javascript>event.source.getForm().addWidgetUpdate(event.source.lookupWidget("../isUnread"));</javascript>
+							</fd:on-value-changed>
+						</fd:field>
+					</fd:widgets>
+				</fd:repeater>
+				<fd:action id="previous" command="messageListPrevious">
+					<fd:label>Previous</fd:label>
+					<fd:hint>Previous 10 Messages</fd:hint>
+				</fd:action>
+				<fd:action id="next" command="messageListNext">
+					<fd:label>Next</fd:label>
+					<fd:hint>Next 10 Messages</fd:hint>
+				</fd:action>
+			</fd:widgets>
+		</fd:group>
+		
+		<!--=========== Message Details: ============-->
+		<fd:group id="message">
+			<fd:widgets>
+				<fd:action id="delete" command="deleteMessage" state="disabled">
+					<fd:label>Delete</fd:label>
+				</fd:action>
+				
+				<fd:field id="subject" state="output">
+					<fd:datatype base="string" />
+					<fd:label>Subject</fd:label>
+				</fd:field>
+				<fd:field id="sender" state="output">
+					<fd:datatype base="string" />
+					<fd:label>From</fd:label>
+				</fd:field>
+				
+				<fd:field id="to" state="output">
+					<fd:datatype base="string" />
+					<fd:label>To</fd:label>
+				</fd:field>
+				<fd:field id="cc" state="output">
+					<fd:datatype base="string" />
+					<fd:label>CC</fd:label>
+				</fd:field>
+				
+				<fd:field id="date" state="output">
+					<fd:datatype base="date">
+						<fd:convertor type="formatting">
+							<fd:patterns>
+								<fd:pattern>yyyy/MM/dd hh:mm</fd:pattern>
+							</fd:patterns>
+						</fd:convertor>
+					</fd:datatype>
+					<fd:label>Date</fd:label>
+				</fd:field>
+				
+				<fd:field id="content" state="output">
+					<fd:datatype base="string" />
+				</fd:field>
+				
+				<!-- Attachment repeater; hidden by default, activated by the binding if contains data (FIXME) -->
+				<fd:repeater id="attachments">
+					<fd:label>Attachments</fd:label>
+					<fd:widgets>
+						<fd:field id="contentType" state="output">
+							<fd:datatype base="string" />
+						</fd:field>
+						<fd:field id="fileName" state="output">
+							<fd:datatype base="string" />
+						</fd:field>
+						<fd:submit id="display" command="displayAttachment" validate="false">
+							<fd:label>Display</fd:label>
+						</fd:submit>
+					</fd:widgets>
+				</fd:repeater>
+			</fd:widgets>
+		</fd:group>
+	
+	</fd:widgets>
+</fd:form>

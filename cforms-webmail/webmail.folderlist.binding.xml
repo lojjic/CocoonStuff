@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<fb:context path="/" direction="load" xmlns:fb="http://apache.org/cocoon/forms/1.0#binding">
+	
+	<fb:class id="folder-repeater">
+		<fb:simple-repeater id="folders" parent-path="." row-path="subFolders" clear-before-load="false">
+			<fb:context path="folder">
+				<fb:value id="name" path="name" />
+				<fb:value id="fullName" path="fullName" />
+				<fb:value id="hasUnread" path="unreadMessageCount &gt; 0" />
+				<fb:value id="unread" path="unreadMessageCount" />
+				<fb:value id="total" path="messageCount" />
+			</fb:context>
+			<fb:new id="folder-repeater" />
+		</fb:simple-repeater>
+	</fb:class>
+	<fb:new id="folder-repeater" />
+		
+</fb:context>

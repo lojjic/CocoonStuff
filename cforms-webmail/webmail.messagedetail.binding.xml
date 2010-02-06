@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<fb:context path="/" direction="load" xmlns:fb="http://apache.org/cocoon/forms/1.0#binding">
+		
+	<fb:group id="message" path=".">
+		<fb:value id="subject" path="subject" />
+		
+		<fb:value id="sender" path="string(message/from[1])" />
+		
+		<fb:context path="recipients">
+			<fb:value id="to" path="to" />
+			<fb:value id="cc" path="cc" />
+		</fb:context>
+		
+		<fb:value id="date" path="message/receivedDate" />
+		
+		<fb:value id="content" path="content" />
+		
+		<!-- FIXME changing state of the repeater widget is buggy
+		<fb:javascript id="attachments" path="attachments" direction="load">
+			<fb:load-form>
+				var ws = Packages.org.apache.cocoon.forms.formmodel.WidgetState;
+				widget.setState(jxpathPointer.getNode().length > 0 ? ws.ACTIVE : ws.INVISIBLE);
+			</fb:load-form>
+		</fb:javascript>
+		-->
+		<fb:simple-repeater id="attachments" parent-path="." row-path="attachments">
+			<fb:value id="contentType" path="contentType" />
+			<fb:value id="fileName" path="fileName" />
+		</fb:simple-repeater>
+	</fb:group>
+		
+</fb:context>

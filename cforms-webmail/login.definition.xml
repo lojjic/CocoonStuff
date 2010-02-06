@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<fd:form xmlns:fd="http://apache.org/cocoon/forms/1.0#definition">
+	<fd:widgets>
+		
+		<fd:messages id="messages" />
+		
+		<fd:field id="host">
+			<fd:datatype base="string" />
+			<fd:label>Host</fd:label>
+			<fd:initial-value>localhost</fd:initial-value>
+		</fd:field>
+		
+		<fd:field id="port">
+			<fd:datatype base="integer" />
+			<fd:label>Port</fd:label>
+			<!--<fd:initial-value>443</fd:initial-value>-->
+		</fd:field>
+		
+		<fd:field id="username">
+			<fd:datatype base="string" />
+			<fd:label>User Name</fd:label>
+		</fd:field>
+		
+		<fd:field id="password">
+			<fd:datatype base="string" />
+			<fd:label>Password</fd:label>
+		</fd:field>
+	
+	</fd:widgets>
+</fd:form>

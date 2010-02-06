@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<html xmlns:ft="http://apache.org/cocoon/forms/1.0#template" 
+	  xmlns:fi="http://apache.org/cocoon/forms/1.0#instance" 
+	  xmlns:jx="http://apache.org/cocoon/templates/jx/1.0">
+<head>
+	<title>Webmail - Login</title>
+</head>
+<body>
+	<jx:import uri="resource://org/apache/cocoon/forms/generation/jx-macros.xml"/>
+	
+	<ft:form-template action="" method="post" ajax="true">
+		<ft:continuation-id />
+		
+		<ft:widget id="messages" />
+		
+		<p>
+			<label for="host"><ft:widget-label id="host" /></label>
+			<ft:widget id="host" />
+		</p>
+		<p>
+			<label for="port"><ft:widget-label id="port" /></label>
+			<ft:widget id="port" />
+		</p>
+		<p>
+			<label for="username"><ft:widget-label id="username" /></label>
+			<ft:widget id="username" />
+		</p>
+		<p>
+			<label for="password"><ft:widget-label id="password" /></label>
+			<ft:widget id="password">
+				<fi:styling type="password" />
+			</ft:widget>
+		</p>
+		<p><input type="submit" /></p>
+		
+	</ft:form-template>
+	
+</body>
+</html>

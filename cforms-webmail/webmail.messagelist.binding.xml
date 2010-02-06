@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<fb:context path="/" direction="load" xmlns:fb="http://apache.org/cocoon/forms/1.0#binding">
+		
+	<fb:group id="messages" path=".">
+		<fb:value id="folderName" path="folder/name" />
+		<fb:value id="begin" path="chunkStart" />
+		<fb:value id="end" path="chunkEnd" />
+		<fb:value id="total" path="folder/messageCount" />
+		
+		<fb:simple-repeater id="list" parent-path="." row-path="messages" clear-before-load="false">
+			<fb:context path="message">
+				<fb:javascript id="isUnread" path="flags" direction="load">
+					<fb:load-form>
+						var flags = jxpathPointer.getNode();
+						if(flags != null) widget.value = !flags.contains(Packages.javax.mail.Flags.Flag.SEEN);
+					</fb:load-form>
+				</fb:javascript>
+			</fb:context>
+			
+			<!-- hide the checkbox for empty rows: -->
+			<fb:javascript id="isSelected" path="." direction="load">
+				<fb:load-form>
+					var ws = Packages.org.apache.cocoon.forms.formmodel.WidgetState;
+					var curState = widget.getState();
+					var tgtState = (jxpathPointer.getNode().subject == null) ? // HACK!!! Depends on knowing that "real" messages will never have a null subject but our fake empty ones will.
+									ws.INVISIBLE : ws.ACTIVE;
+					if(curState != tgtState) widget.setState(tgtState);
+				</fb:load-form>
+			</fb:javascript>
+			
+			<fb:value id="subject" path="subject" />
+			<fb:value id="sender" path="sender" />
+			<fb:value id="date" path="message/receivedDate" />
+			<fb:value id="size" path="size" />
+		</fb:simple-repeater>
+	</fb:group>
+		
+</fb:context>

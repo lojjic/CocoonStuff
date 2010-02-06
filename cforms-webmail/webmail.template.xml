@@ -1,0 +1,168 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<html xmlns:ft="http://apache.org/cocoon/forms/1.0#template" 
+	  xmlns:fi="http://apache.org/cocoon/forms/1.0#instance" 
+	  xmlns:jx="http://apache.org/cocoon/templates/jx/1.0">
+<head>
+	<title>Webmail</title>
+	<link rel="stylesheet" type="text/css" href="resources/webmail.css" />
+	<script type="text/javascript" src="resources/webmail.js"><!-- --></script>
+</head>
+<body>
+	<jx:import uri="resource://org/apache/cocoon/forms/generation/jx-macros.xml"/>
+	
+	<ft:form-template action="" method="post" ajax="true">
+		<ft:continuation-id />
+		
+		<!--=========== Messages: ===========-->
+		<ft:widget id="notifications" />
+		
+		<!--=========== Folder List: ============-->
+		<div id="folderList">
+			<ft:class id="folder-repeater">
+				<ft:repeater id="folders">
+					<ul>
+						<ft:repeater-rows>
+							<li>
+								<!--<ft:widget id="collapser" />-->
+								<ft:widget id="name">
+									<fi:styling link-to-action="select" booleanfield-as-class="hasUnread" />
+								</ft:widget>
+								<ft:widget id="hasUnread">
+									<fi:styling type="invisible" />
+								</ft:widget>
+								
+								(<ft:widget id="unread" />/<ft:widget id="total" />)
+								<ft:new id="folder-repeater" />
+							</li>
+						</ft:repeater-rows>
+					</ul>
+				</ft:repeater>
+			</ft:class>
+			<ft:new id="folder-repeater" />
+			<ft:widget id="refreshFolderList" />
+		</div>
+		
+		<!--=========== Message List: ============-->
+		<div id="messageList">
+		<ft:group id="messages">
+		<div id="messages">
+			<p id="messageListCounts"><strong><ft:widget id="folderName" /></strong> - Viewing messages <ft:widget id="begin" /> to <ft:widget id="end" /> of <ft:widget id="total" /></p>
+			
+			<p id="messageListActions">
+				<ft:widget id="delete" />
+				<ft:widget id="move" />
+				<ft:widget id="folderList" />
+			</p>
+			
+			<ft:widget id="previous" />
+			<ft:repeater id="list">
+				<table>
+					<col id="selectedCol" />
+					<col id="subjectCol" />
+					<col id="senderCol" />
+					<col id="dateCol" />
+					<col id="sizeCol" />
+					<thead>
+						<tr>
+							<th>
+								<input type="checkbox" checked="checked" title="Select All"
+									   onclick="toggleAllCheckboxes(document.getElementById('messageList').getElementsByTagName('tbody')[0]); this.checked = true;" />
+							</th>
+							<th>Subject</th>
+							<th>Sender</th>
+							<th>Date</th>
+							<th>Size</th>
+						</tr>
+					</thead>
+					<tbody>
+						<ft:repeater-rows>
+							<tr>
+								<td><ft:widget id="isSelected" /></td>
+								<td>
+									<ft:widget id="isUnread">
+										<fi:styling type="invisible" />
+									</ft:widget>
+									<ft:widget id="subject">
+										<fi:styling link-to-action="select" booleanfield-as-class="isUnread" />
+									</ft:widget>
+								</td>
+								<td>
+									<ft:widget id="sender">
+										<fi:styling booleanfield-as-class="isUnread" />
+									</ft:widget>
+								</td>
+								<td>
+									<ft:widget id="date">
+										<fi:styling booleanfield-as-class="isUnread" />
+									</ft:widget>
+								</td>
+								<td>
+									<ft:widget id="size">
+										<fi:styling booleanfield-as-class="isUnread" />
+									</ft:widget>
+								</td>
+							</tr>
+						</ft:repeater-rows>
+					</tbody>
+				</table>
+			</ft:repeater>
+			<ft:widget id="next" />
+		</div>
+		</ft:group>
+		</div>
+		
+		<!--=========== Message Detail: ============-->
+		<div id="messageDetails">
+		<ft:group id="message">
+		<div id="message">
+			<p id="messageButtons">
+				<ft:widget id="delete" />
+			</p>
+			
+			<table>
+				<tbody>
+					<tr>
+						<th><ft:widget-label id="subject" /></th>
+						<td><ft:widget id="subject" /></td>
+					</tr>
+					<tr>
+						<th><ft:widget-label id="sender" /></th>
+						<td><ft:widget id="sender" /></td>
+					</tr>
+					<tr>
+						<th><ft:widget-label id="to" /></th>
+						<td><ft:widget id="to" /></td>
+					</tr>
+					<tr>
+						<th><ft:widget-label id="cc" /></th>
+						<td><ft:widget id="cc" /></td>
+					</tr>
+					<tr>
+						<th><ft:widget-label id="date" /></th>
+						<td><ft:widget id="date" /></td>
+					</tr>
+				</tbody>
+			</table>
+			
+			<ft:widget id="content">
+				<fi:styling type="email-content" />
+			</ft:widget>
+			
+			<ft:repeater id="attachments">
+				<ul>
+					<ft:repeater-rows>
+						<li>
+							<ft:widget id="fileName"><fi:styling link-to-action="display" /></ft:widget>
+							(<ft:widget id="contentType"><fi:styling link-to-action="display" /></ft:widget>)
+						</li>
+					</ft:repeater-rows>
+				</ul>
+			</ft:repeater>
+		</div>	
+		</ft:group>
+		</div>
+		
+	</ft:form-template>
+	
+</body>
+</html>

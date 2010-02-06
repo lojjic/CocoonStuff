@@ -1,0 +1,105 @@
+<?xml version="1.0"?>
+
+<map:sitemap xmlns:map="http://apache.org/cocoon/sitemap/1.0">
+
+	<map:components>
+		<map:generators default="file">
+			<map:generator name="file" src="org.apache.cocoon.generation.FileGenerator"/>
+		</map:generators>
+		
+		<map:transformers default="xsltc">
+			<map:transformer logger="sitemap.transformer.xslt" name="xslt" pool-max="32" src="org.apache.cocoon.transformation.TraxTransformer">
+				<use-request-parameters>false</use-request-parameters>
+				<use-session-parameters>false</use-session-parameters>
+				<use-cookie-parameters>false</use-cookie-parameters>
+				<xslt-processor-role>xslt</xslt-processor-role>
+				<check-includes>true</check-includes>
+			</map:transformer>
+			<map:transformer logger="sitemap.transformer.xsltc" name="xsltc" pool-max="32" src="org.apache.cocoon.transformation.TraxTransformer">
+				<use-request-parameters>false</use-request-parameters>
+				<use-session-parameters>false</use-session-parameters>
+				<use-cookie-parameters>false</use-cookie-parameters>
+				<xslt-processor-role>xsltc</xslt-processor-role>
+				<check-includes>true</check-includes>
+			</map:transformer>
+			<map:transformer name="forms" src="org.apache.cocoon.forms.transformation.FormsTemplateTransformer"/>
+			<map:transformer name="browser-update" src="org.apache.cocoon.ajax.BrowserUpdateTransformer"/>
+			<map:transformer name="i18n" src="org.apache.cocoon.transformation.I18nTransformer">
+				<catalogues default="forms">
+					<catalogue id="forms" name="FormsMessages" location="messages"/>
+				</catalogues>
+				<cache-at-startup>true</cache-at-startup>
+			</map:transformer>
+		</map:transformers>
+	
+		<map:serializers default="html">
+			<map:serializer logger="sitemap.serializer.xml" mime-type="text/xml" name="xml" src="org.apache.cocoon.serialization.XMLSerializer"/>
+			<map:serializer logger="sitemap.serializer.html" mime-type="text/html" name="html" pool-max="32" src="org.apache.cocoon.serialization.HTMLSerializer">
+				<doctype-public>-//W3C//DTD HTML 4.01 Transitional//EN</doctype-public>
+				<doctype-system>http://www.w3.org/TR/html4/loose.dtd</doctype-system>
+			</map:serializer>
+		</map:serializers>
+		
+		<map:matchers default="wildcard">
+			<map:matcher logger="sitemap.matcher.wildcard" name="wildcard" src="org.apache.cocoon.matching.WildcardURIMatcher"/>
+    		<map:matcher logger="sitemap.matcher.request-parameter" name="request-parameter" src="org.apache.cocoon.matching.RequestParameterMatcher"/>
+		</map:matchers>
+		
+		<map:selectors default="exception">
+			<map:selector logger="sitemap.selector.exception" name="exception" src="org.apache.cocoon.selection.ExceptionSelector">
+				<exception class="org.apache.cocoon.ResourceNotFoundException" name="not-found"/>
+				<exception class="org.apache.cocoon.components.flow.InvalidContinuationException" name="invalid-continuation"/>
+				<!-- The statement below tells the selector to unroll as much exceptions as possible -->
+				<exception class="java.lang.Throwable" unroll="true"/>
+			</map:selector>
+		</map:selectors>
+		
+	</map:components>
+
+	<map:flow language="javascript">
+		<map:script src="webmail.flow.js"/>
+	</map:flow>
+
+	<map:pipelines>
+		<map:pipeline>
+		
+			<map:match pattern="">
+				<map:match type="request-parameter" pattern="continuation-id">
+					<map:call continuation="{1}" />
+				</map:match>
+				<map:call function="webmail"/>
+			</map:match>
+
+			<map:match pattern="*.display">
+				<map:generate type="jx" src="{1}.template.xml"/>
+				<map:transform type="browser-update"/>
+				<map:transform src="webmail-styling.xsl" type="xslt">
+					<map:parameter name="resources-uri" value="resources/forms"/>
+				</map:transform>
+				<map:select type="request-parameter">
+					<map:parameter name="parameter-name" value="cocoon-ajax"/>
+					<map:when test="true">
+						<map:serialize type="xml"/>
+					</map:when>
+					<map:otherwise>
+						<map:serialize type="html"/>
+					</map:otherwise>
+				</map:select>
+			</map:match>
+			
+			<map:match pattern="resources/forms/**">
+				<map:read src="resource://org/apache/cocoon/forms/resources/{1}" />
+			</map:match>
+			
+			<map:match pattern="resources/**">
+				<map:read src="resources/{1}" />
+			</map:match>
+			
+			<!-- Attachments: -->
+			<map:match pattern="attachment">
+				<map:read src="module:flow-attr:content" />
+			</map:match>
+			
+		</map:pipeline>
+	</map:pipelines>
+</map:sitemap>
